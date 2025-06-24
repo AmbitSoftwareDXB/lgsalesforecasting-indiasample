@@ -6,6 +6,7 @@ import SupplyChain from "@/components/dashboard/SupplyChain";
 import ExpansionTracker from "@/components/dashboard/ExpansionTracker";
 import RiskAlertPanel from "@/components/dashboard/RiskAlertPanel";
 import AutoManualForecast from "@/components/dashboard/AutoManualForecast";
+import FeatureImportance from "@/components/dashboard/FeatureImportance";
 
 const Index = () => {
   return (
@@ -26,6 +27,7 @@ const Index = () => {
           <div className="space-y-6">
             <RiskAlertPanel />
             <AutoManualForecast />
+            <FeatureImportance />
           </div>
         </div>
       </div>
