@@ -6,11 +6,8 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
-              AI-based Sales Analytics
+              AI-based Sales Analytics | LG India Pune Plant
             </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              LG India's Pune Plant
-            </p>
           </div>
           
           <div className="text-right">
