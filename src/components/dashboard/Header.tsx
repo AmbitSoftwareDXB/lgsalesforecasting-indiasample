@@ -6,7 +6,12 @@ const Header = () => {
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <div>
+          <div className="flex flex-col items-start">
+            <img 
+              src="/lovable-uploads/f216a639-6e76-4e40-beae-a061dee63b9f.png" 
+              alt="Company Logo" 
+              className="h-8 mb-2"
+            />
             <h1 className="text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">
               AI-based Sales Analytics | LG India Pune Plant
             </h1>
