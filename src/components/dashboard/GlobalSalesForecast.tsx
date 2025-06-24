@@ -1,10 +1,13 @@
+
 import React, { useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMap from 'highcharts/modules/map';
 
 // Initialize the map module correctly
-HighchartsMap(Highcharts);
+if (typeof HighchartsMap === 'function') {
+  HighchartsMap(Highcharts);
+}
 
 const GlobalSalesForecast = () => {
   const chartRef = useRef(null);
