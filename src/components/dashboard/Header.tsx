@@ -7,11 +7,13 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex flex-col items-start">
-            <img 
-              src="/lovable-uploads/f216a639-6e76-4e40-beae-a061dee63b9f.png" 
-              alt="Company Logo" 
-              className="h-8 mb-2"
-            />
+            <div className="bg-gray-100 dark:bg-transparent p-2 rounded-md mb-2">
+              <img 
+                src="/lovable-uploads/f216a639-6e76-4e40-beae-a061dee63b9f.png" 
+                alt="Company Logo" 
+                className="h-8"
+              />
+            </div>
             <h1 className="text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">
               AI-based Sales Analytics | LG India Pune Plant
             </h1>
