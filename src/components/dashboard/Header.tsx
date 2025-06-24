@@ -1,4 +1,5 @@
 
+
 import ThemeToggle from "@/components/ThemeToggle";
 
 const Header = () => {
@@ -7,7 +8,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex flex-col items-start">
-            <div className="bg-gray-100 dark:bg-transparent p-2 rounded-md mb-2">
+            <div className="bg-gray-800 dark:bg-transparent p-2 rounded-md mb-2">
               <img 
                 src="/lovable-uploads/f216a639-6e76-4e40-beae-a061dee63b9f.png" 
                 alt="Company Logo" 
@@ -35,3 +36,4 @@ const Header = () => {
 };
 
 export default Header;
+
