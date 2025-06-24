@@ -70,16 +70,16 @@ const RiskAlertPanel = () => {
   return (
     <div className="space-y-6">
       {/* Risk Overview */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <AlertCircle className="w-5 h-5 mr-2 text-blue-600" />
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+          <AlertCircle className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
           Risk Overview
         </h2>
         
         <div className="space-y-3">
           {riskMetrics.map((metric, index) => (
             <div key={index} className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{metric.label}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">{metric.label}</span>
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${metric.color} ${metric.bgColor}`}>
                 {metric.value}
               </span>
@@ -89,8 +89,8 @@ const RiskAlertPanel = () => {
       </div>
       
       {/* Alerts Panel */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Real-time Alerts
         </h2>
         
@@ -100,20 +100,20 @@ const RiskAlertPanel = () => {
             return (
               <div 
                 key={alert.id} 
-                className={`p-3 rounded-lg border-l-4 ${alert.bgColor} ${alert.borderColor} transition-all hover:shadow-md`}
+                className={`p-3 rounded-lg border-l-4 ${alert.bgColor} dark:bg-gray-700/50 ${alert.borderColor} transition-all hover:shadow-md`}
               >
                 <div className="flex items-start space-x-3">
                   <IconComponent className={`w-5 h-5 mt-0.5 ${alert.color}`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
-                      <h4 className="text-sm font-medium text-gray-900 truncate">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {alert.title}
                       </h4>
-                      <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 whitespace-nowrap">
                         {alert.time}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                       {alert.description}
                     </p>
                   </div>

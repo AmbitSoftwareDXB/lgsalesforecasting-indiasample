@@ -1,5 +1,5 @@
-
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const forecastErrorData = [
   { month: 'Jan', error: 3.2, target: 5.0 },
@@ -20,45 +20,69 @@ const weatherImpactData = [
 ];
 
 const RegionBreakdown = () => {
+  const { theme } = useTheme();
+  
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Region-wise Performance Breakdown
       </h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Monthly Forecast Error */}
         <div>
-          <h3 className="text-md font-medium text-gray-700 mb-3">Monthly Forecast Error</h3>
+          <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-3">Monthly Forecast Error</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={forecastErrorData}>
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
+              <XAxis 
+                dataKey="month" 
+                tick={{ fontSize: 12, fill: theme === 'dark' ? '#D1D5DB' : '#374151' }} 
+              />
+              <YAxis 
+                tick={{ fontSize: 12, fill: theme === 'dark' ? '#D1D5DB' : '#374151' }} 
+              />
               <Tooltip 
                 formatter={(value, name) => [
                   `${value}%`, 
                   name === 'error' ? 'Actual Error' : 'Target Error'
                 ]}
+                contentStyle={{
+                  backgroundColor: theme === 'dark' ? '#374151' : '#FFFFFF',
+                  border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
+                  borderRadius: '6px',
+                  color: theme === 'dark' ? '#F9FAFB' : '#111827'
+                }}
               />
               <Legend />
               <Bar dataKey="error" fill="#007BFF" name="error" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="target" fill="#E5E7EB" name="target" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="target" fill={theme === 'dark' ? '#4B5563' : '#E5E7EB'} name="target" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         
         {/* Weather Impact Score */}
         <div>
-          <h3 className="text-md font-medium text-gray-700 mb-3">Weather Impact Score</h3>
+          <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-3">Weather Impact Score</h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weatherImpactData}>
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
+              <XAxis 
+                dataKey="month" 
+                tick={{ fontSize: 12, fill: theme === 'dark' ? '#D1D5DB' : '#374151' }} 
+              />
+              <YAxis 
+                tick={{ fontSize: 12, fill: theme === 'dark' ? '#D1D5DB' : '#374151' }} 
+              />
               <Tooltip 
                 formatter={(value, name) => [
                   name === 'impact' ? `${value}%` : `${value}°C`,
                   name === 'impact' ? 'Impact Score' : 'Avg Temperature'
                 ]}
+                contentStyle={{
+                  backgroundColor: theme === 'dark' ? '#374151' : '#FFFFFF',
+                  border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
+                  borderRadius: '6px',
+                  color: theme === 'dark' ? '#F9FAFB' : '#111827'
+                }}
               />
               <Legend />
               <Line 
