@@ -90,12 +90,10 @@ const GlobalSalesForecast = () => {
     // Dynamically import and initialize the map module
     const initializeMap = async () => {
       try {
-        // Import the map module dynamically
+        // Import the map module dynamically and initialize it
         const mapModule = await import('highcharts/modules/map');
-        // Initialize the map module - the default export should be a function
-        if (mapModule.default && typeof mapModule.default === 'function') {
-          mapModule.default(Highcharts);
-        }
+        // Call the module as a function to initialize it
+        (mapModule as any)(Highcharts);
         
         // Load the world map data
         const topology = await fetch('https://code.highcharts.com/mapdata/custom/world.js');
