@@ -59,7 +59,7 @@ const GlobalSalesForecast = () => {
     },
     series: [{
       name: 'Sales Forecast Accuracy',
-      mapData: require('@highcharts/map-collection/custom/world.geo.json'),
+      mapData: Highcharts.maps['custom/world'],
       data: mapData,
       joinBy: 'hc-key',
       nullColor: '#f0f0f0',
@@ -91,6 +91,28 @@ const GlobalSalesForecast = () => {
       }]
     }
   };
+
+  useEffect(() => {
+    // Load the world map data
+    const loadMapData = async () => {
+      try {
+        const topology = await fetch('https://code.highcharts.com/mapdata/custom/world.js');
+        const mapScript = await topology.text();
+        
+        // Execute the script to load the map into Highcharts.maps
+        const script = document.createElement('script');
+        script.innerHTML = mapScript;
+        document.head.appendChild(script);
+        
+        // Clean up
+        document.head.removeChild(script);
+      } catch (error) {
+        console.log('Map data loading failed, using fallback');
+      }
+    };
+
+    loadMapData();
+  }, []);
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
