@@ -1,13 +1,10 @@
-
 import React, { useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMap from 'highcharts/modules/map';
 
-// Initialize the map module
-if (typeof Highcharts === 'object') {
-  HighchartsMap(Highcharts);
-}
+// Initialize the map module correctly
+HighchartsMap(Highcharts);
 
 const GlobalSalesForecast = () => {
   const chartRef = useRef(null);
@@ -59,7 +56,7 @@ const GlobalSalesForecast = () => {
     },
     series: [{
       name: 'Sales Forecast Accuracy',
-      mapData: Highcharts.maps['custom/world'],
+      mapData: undefined, // Will be set after loading
       data: mapData,
       joinBy: 'hc-key',
       nullColor: '#f0f0f0',
@@ -106,6 +103,14 @@ const GlobalSalesForecast = () => {
         
         // Clean up
         document.head.removeChild(script);
+        
+        // Update the chart with the loaded map data
+        if (chartRef.current && (chartRef.current as any).chart) {
+          const chart = (chartRef.current as any).chart;
+          chart.series[0].update({
+            mapData: (Highcharts as any).maps['custom/world']
+          });
+        }
       } catch (error) {
         console.log('Map data loading failed, using fallback');
       }
