@@ -5,6 +5,7 @@ import RegionBreakdown from "@/components/dashboard/RegionBreakdown";
 import SupplyChain from "@/components/dashboard/SupplyChain";
 import ExpansionTracker from "@/components/dashboard/ExpansionTracker";
 import RiskAlertPanel from "@/components/dashboard/RiskAlertPanel";
+import AutoManualForecast from "@/components/dashboard/AutoManualForecast";
 
 const Index = () => {
   return (
@@ -24,6 +25,7 @@ const Index = () => {
           {/* Sidebar Panels - 1/3 width */}
           <div className="space-y-6">
             <RiskAlertPanel />
+            <AutoManualForecast />
           </div>
         </div>
       </div>
