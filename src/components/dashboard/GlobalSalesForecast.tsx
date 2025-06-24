@@ -1,10 +1,7 @@
+
 import React, { useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-
-// Import and initialize the map module properly
-const HighchartsMap = require('highcharts/modules/map');
-HighchartsMap(Highcharts);
 
 const GlobalSalesForecast = () => {
   const chartRef = useRef(null);
@@ -90,9 +87,15 @@ const GlobalSalesForecast = () => {
   };
 
   useEffect(() => {
-    // Load the world map data
-    const loadMapData = async () => {
+    // Dynamically import and initialize the map module
+    const initializeMap = async () => {
       try {
+        // Import the map module dynamically
+        const HighchartsMap = await import('highcharts/modules/map');
+        // Initialize the map module
+        HighchartsMap.default(Highcharts);
+        
+        // Load the world map data
         const topology = await fetch('https://code.highcharts.com/mapdata/custom/world.js');
         const mapScript = await topology.text();
         
@@ -112,11 +115,11 @@ const GlobalSalesForecast = () => {
           });
         }
       } catch (error) {
-        console.log('Map data loading failed, using fallback');
+        console.log('Map initialization failed, using fallback');
       }
     };
 
-    loadMapData();
+    initializeMap();
   }, []);
 
   return (
