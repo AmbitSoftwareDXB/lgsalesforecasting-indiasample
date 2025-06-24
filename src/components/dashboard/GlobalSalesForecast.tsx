@@ -5,8 +5,8 @@ import { Chart } from "react-google-charts";
 const GlobalSalesForecast = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   
-  // Sample data for different regions - converted to Google Charts format
-  const data = [
+  // Sample data for different countries - converted to Google Charts format
+  const worldData = [
     ["Country", "Forecast Accuracy"],
     ["United States", 95],
     ["China", 87],
@@ -19,6 +19,44 @@ const GlobalSalesForecast = () => {
     ["Canada", 88],
     ["France", 80],
   ];
+
+  // Regional data for each country using proper region codes
+  const regionalData = {
+    "United States": [
+      ["State", "Forecast Accuracy"],
+      ["US-CA", 95], // California
+      ["US-TX", 87], // Texas
+      ["US-NY", 92], // New York
+      ["US-FL", 78], // Florida
+      ["US-IL", 82], // Illinois
+      ["US-PA", 85], // Pennsylvania
+    ],
+    "Germany": [
+      ["State", "Forecast Accuracy"],
+      ["DE-BY", 85], // Bavaria
+      ["DE-NW", 78], // North Rhine-Westphalia
+      ["DE-BW", 82], // Baden-Württemberg
+      ["DE-NI", 75], // Lower Saxony
+      ["DE-HE", 80], // Hesse
+      ["DE-SN", 77], // Saxony
+    ],
+    "United Kingdom": [
+      ["Region", "Forecast Accuracy"],
+      ["GB-ENG", 85], // England
+      ["GB-SCT", 78], // Scotland
+      ["GB-WLS", 80], // Wales
+      ["GB-NIR", 75], // Northern Ireland
+    ],
+    "Japan": [
+      ["Prefecture", "Forecast Accuracy"],
+      ["JP-13", 88], // Tokyo
+      ["JP-27", 85], // Osaka
+      ["JP-14", 82], // Kanagawa
+      ["JP-23", 78], // Aichi
+      ["JP-28", 80], // Hyogo
+      ["JP-40", 75], // Fukuoka
+    ]
+  };
 
   // Detailed country data
   const countryDetails = {
@@ -60,6 +98,14 @@ const GlobalSalesForecast = () => {
     }
   };
 
+  // Get the current data to display
+  const getCurrentData = () => {
+    if (selectedCountry && regionalData[selectedCountry as keyof typeof regionalData]) {
+      return regionalData[selectedCountry as keyof typeof regionalData];
+    }
+    return worldData;
+  };
+
   const options = {
     title: selectedCountry ? `${selectedCountry} - Regional Breakdown` : "Sales Forecast Accuracy by Country",
     colorAxis: { colors: ["#CCE7FF", "#007BFF"] },
@@ -69,6 +115,9 @@ const GlobalSalesForecast = () => {
     region: selectedCountry ? getCountryCode(selectedCountry) : "world",
     resolution: selectedCountry ? "provinces" : "countries",
     keepAspectRatio: true,
+    legend: {
+      numberFormat: "#'%'"
+    }
   };
 
   function getCountryCode(countryName: string): string {
@@ -78,7 +127,11 @@ const GlobalSalesForecast = () => {
       "India": "IN",
       "Germany": "DE",
       "United Kingdom": "GB",
-      "Japan": "JP"
+      "Japan": "JP",
+      "Brazil": "BR",
+      "Australia": "AU",
+      "Canada": "CA",
+      "France": "FR"
     };
     return codes[countryName] || "world";
   }
@@ -89,16 +142,24 @@ const GlobalSalesForecast = () => {
     if (selection.length === 0) return;
     
     const selectedRow = selection[0].row;
-    if (selectedRow >= 0 && selectedRow < data.length - 1) {
-      const countryName = data[selectedRow + 1][0] as string;
-      console.log("Selected country:", countryName);
-      
-      if (selectedCountry === countryName) {
-        // If clicking the same country, zoom out
+    const currentData = getCurrentData();
+    
+    if (selectedRow >= 0 && selectedRow < currentData.length - 1) {
+      if (selectedCountry) {
+        // If we're already in a country view, clicking should reset to world view
+        console.log("Resetting to world view");
         setSelectedCountry(null);
       } else {
-        // Zoom into the new country
-        setSelectedCountry(countryName);
+        // If we're in world view, zoom into the selected country
+        const countryName = currentData[selectedRow + 1][0] as string;
+        console.log("Selected country:", countryName);
+        
+        // Only zoom in if we have regional data for this country
+        if (regionalData[countryName as keyof typeof regionalData]) {
+          setSelectedCountry(countryName);
+        } else {
+          console.log("No regional data available for:", countryName);
+        }
       }
     }
   };
@@ -136,7 +197,7 @@ const GlobalSalesForecast = () => {
             chartType="GeoChart"
             width="100%"
             height="300px"
-            data={data}
+            data={getCurrentData()}
             options={options}
           />
           
@@ -160,7 +221,7 @@ const GlobalSalesForecast = () => {
           
           {/* Click instruction */}
           <div className="absolute bottom-4 right-4 bg-white/90 rounded-lg p-2 text-xs text-gray-600">
-            Click on a country to zoom in
+            {selectedCountry ? "Click region to return to world view" : "Click on a country to zoom in"}
           </div>
         </div>
       </div>
