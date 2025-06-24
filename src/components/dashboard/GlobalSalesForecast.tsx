@@ -1,8 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Chart } from "react-google-charts";
 
 const GlobalSalesForecast = () => {
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  
   // Sample data for different regions - converted to Google Charts format
   const data = [
     ["Country", "Forecast Accuracy"],
@@ -18,19 +20,108 @@ const GlobalSalesForecast = () => {
     ["France", 80],
   ];
 
+  // Detailed country data
+  const countryDetails = {
+    "United States": {
+      accuracy: 95,
+      forecast: "285K units",
+      trend: "+5.2%",
+      regions: ["California: 45K", "Texas: 38K", "New York: 32K", "Florida: 28K"]
+    },
+    "China": {
+      accuracy: 87,
+      forecast: "412K units",
+      trend: "+8.1%",
+      regions: ["Beijing: 85K", "Shanghai: 78K", "Guangzhou: 65K", "Shenzhen: 58K"]
+    },
+    "India": {
+      accuracy: 92,
+      forecast: "198K units",
+      trend: "+12.3%",
+      regions: ["Mumbai: 42K", "Delhi: 38K", "Bangalore: 35K", "Chennai: 28K"]
+    },
+    "Germany": {
+      accuracy: 78,
+      forecast: "145K units",
+      trend: "+2.8%",
+      regions: ["Berlin: 35K", "Munich: 28K", "Hamburg: 25K", "Frankfurt: 22K"]
+    },
+    "United Kingdom": {
+      accuracy: 82,
+      forecast: "128K units",
+      trend: "+3.5%",
+      regions: ["London: 45K", "Manchester: 22K", "Birmingham: 18K", "Leeds: 15K"]
+    },
+    "Japan": {
+      accuracy: 85,
+      forecast: "156K units",
+      trend: "+1.9%",
+      regions: ["Tokyo: 58K", "Osaka: 32K", "Yokohama: 25K", "Nagoya: 18K"]
+    }
+  };
+
   const options = {
-    title: "Sales Forecast Accuracy by Country",
+    title: selectedCountry ? `${selectedCountry} - Regional Breakdown` : "Sales Forecast Accuracy by Country",
     colorAxis: { colors: ["#CCE7FF", "#007BFF"] },
     backgroundColor: "transparent",
     datalessRegionColor: "#f0f0f0",
     defaultColor: "#f5f5f5",
+    region: selectedCountry ? getCountryCode(selectedCountry) : "world",
+    resolution: selectedCountry ? "provinces" : "countries",
+    keepAspectRatio: true,
+  };
+
+  function getCountryCode(countryName: string): string {
+    const codes: { [key: string]: string } = {
+      "United States": "US",
+      "China": "CN", 
+      "India": "IN",
+      "Germany": "DE",
+      "United Kingdom": "GB",
+      "Japan": "JP"
+    };
+    return codes[countryName] || "world";
+  }
+
+  const handleCountryClick = ({ chartWrapper }: any) => {
+    const chart = chartWrapper.getChart();
+    const selection = chart.getSelection();
+    if (selection.length === 0) return;
+    
+    const selectedRow = selection[0].row;
+    if (selectedRow >= 0 && selectedRow < data.length - 1) {
+      const countryName = data[selectedRow + 1][0] as string;
+      console.log("Selected country:", countryName);
+      
+      if (selectedCountry === countryName) {
+        // If clicking the same country, zoom out
+        setSelectedCountry(null);
+      } else {
+        // Zoom into the new country
+        setSelectedCountry(countryName);
+      }
+    }
+  };
+
+  const resetView = () => {
+    setSelectedCountry(null);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
-        Global Sales Forecast Overview
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Global Sales Forecast Overview
+        </h2>
+        {selectedCountry && (
+          <button
+            onClick={resetView}
+            className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+          >
+            ← Back to World View
+          </button>
+        )}
+      </div>
       
       {/* Google Charts GeoChart */}
       <div className="mb-6">
@@ -39,13 +130,7 @@ const GlobalSalesForecast = () => {
             chartEvents={[
               {
                 eventName: "select",
-                callback: ({ chartWrapper }) => {
-                  const chart = chartWrapper.getChart();
-                  const selection = chart.getSelection();
-                  if (selection.length === 0) return;
-                  const region = data[selection[0].row + 1];
-                  console.log("Selected " + region);
-                },
+                callback: handleCountryClick,
               },
             ]}
             chartType="GeoChart"
@@ -72,8 +157,47 @@ const GlobalSalesForecast = () => {
               </div>
             </div>
           </div>
+          
+          {/* Click instruction */}
+          <div className="absolute bottom-4 right-4 bg-white/90 rounded-lg p-2 text-xs text-gray-600">
+            Click on a country to zoom in
+          </div>
         </div>
       </div>
+      
+      {/* Country Details Panel */}
+      {selectedCountry && countryDetails[selectedCountry as keyof typeof countryDetails] && (
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h3 className="text-md font-semibold text-gray-900 mb-3">
+            {selectedCountry} - Detailed Analytics
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-sm text-gray-600 mb-1">Forecast Accuracy</div>
+              <div className="text-xl font-bold text-gray-900">
+                {countryDetails[selectedCountry as keyof typeof countryDetails].accuracy}%
+              </div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-600 mb-1">Total Forecast</div>
+              <div className="text-xl font-bold text-gray-900">
+                {countryDetails[selectedCountry as keyof typeof countryDetails].forecast}
+              </div>
+              <div className="text-xs text-green-600">
+                {countryDetails[selectedCountry as keyof typeof countryDetails].trend} from last quarter
+              </div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="text-sm text-gray-600 mb-2">Top Regions</div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              {countryDetails[selectedCountry as keyof typeof countryDetails].regions.map((region, index) => (
+                <div key={index} className="text-gray-700">{region}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
