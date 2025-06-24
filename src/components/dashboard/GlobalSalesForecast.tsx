@@ -1,126 +1,30 @@
 
-import React, { useEffect, useRef } from 'react';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
+import React from 'react';
+import { Chart } from "react-google-charts";
 
 const GlobalSalesForecast = () => {
-  const chartRef = useRef(null);
-
-  // Sample data for different regions
-  const mapData = [
-    { 'hc-key': 'us', value: 95, name: 'United States' },
-    { 'hc-key': 'cn', value: 87, name: 'China' },
-    { 'hc-key': 'in', value: 92, name: 'India' },
-    { 'hc-key': 'de', value: 78, name: 'Germany' },
-    { 'hc-key': 'gb', value: 82, name: 'United Kingdom' },
-    { 'hc-key': 'jp', value: 85, name: 'Japan' },
-    { 'hc-key': 'br', value: 73, name: 'Brazil' },
-    { 'hc-key': 'au', value: 76, name: 'Australia' },
-    { 'hc-key': 'ca', value: 88, name: 'Canada' },
-    { 'hc-key': 'fr', value: 80, name: 'France' }
+  // Sample data for different regions - converted to Google Charts format
+  const data = [
+    ["Country", "Forecast Accuracy"],
+    ["United States", 95],
+    ["China", 87],
+    ["India", 92],
+    ["Germany", 78],
+    ["United Kingdom", 82],
+    ["Japan", 85],
+    ["Brazil", 73],
+    ["Australia", 76],
+    ["Canada", 88],
+    ["France", 80],
   ];
 
-  const mapOptions = {
-    chart: {
-      map: 'custom/world',
-      height: 300,
-      backgroundColor: 'transparent',
-      style: {
-        fontFamily: 'Inter, sans-serif'
-      }
-    },
-    title: {
-      text: null
-    },
-    credits: {
-      enabled: false
-    },
-    legend: {
-      enabled: false
-    },
-    colorAxis: {
-      min: 50,
-      max: 100,
-      stops: [
-        [0, '#CCE7FF'],
-        [0.5, '#8EC1E0'],
-        [0.8, '#007BFF'],
-        [1, '#003d82']
-      ],
-      labels: {
-        format: '{value}%'
-      }
-    },
-    series: [{
-      name: 'Sales Forecast Accuracy',
-      mapData: undefined, // Will be set after loading
-      data: mapData,
-      joinBy: 'hc-key',
-      nullColor: '#f0f0f0',
-      borderColor: '#ffffff',
-      borderWidth: 0.5,
-      states: {
-        hover: {
-          borderWidth: 2,
-          borderColor: '#007BFF'
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      tooltip: {
-        pointFormat: '<b>{point.name}</b><br/>Forecast Accuracy: <b>{point.value}%</b>'
-      }
-    }],
-    responsive: {
-      rules: [{
-        condition: {
-          maxWidth: 768
-        },
-        chartOptions: {
-          chart: {
-            height: 200
-          }
-        }
-      }]
-    }
+  const options = {
+    title: "Sales Forecast Accuracy by Country",
+    colorAxis: { colors: ["#CCE7FF", "#007BFF"] },
+    backgroundColor: "transparent",
+    datalessRegionColor: "#f0f0f0",
+    defaultColor: "#f5f5f5",
   };
-
-  useEffect(() => {
-    // Dynamically import and initialize the map module
-    const initializeMap = async () => {
-      try {
-        // Import the map module dynamically and initialize it
-        const mapModule = await import('highcharts/modules/map');
-        // Call the module as a function to initialize it
-        (mapModule as any)(Highcharts);
-        
-        // Load the world map data
-        const topology = await fetch('https://code.highcharts.com/mapdata/custom/world.js');
-        const mapScript = await topology.text();
-        
-        // Execute the script to load the map into Highcharts.maps
-        const script = document.createElement('script');
-        script.innerHTML = mapScript;
-        document.head.appendChild(script);
-        
-        // Clean up
-        document.head.removeChild(script);
-        
-        // Update the chart with the loaded map data
-        if (chartRef.current && (chartRef.current as any).chart) {
-          const chart = (chartRef.current as any).chart;
-          chart.series[0].update({
-            mapData: (Highcharts as any).maps['custom/world']
-          });
-        }
-      } catch (error) {
-        console.log('Map initialization failed, using fallback');
-      }
-    };
-
-    initializeMap();
-  }, []);
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
@@ -128,14 +32,27 @@ const GlobalSalesForecast = () => {
         Global Sales Forecast Overview
       </h2>
       
-      {/* World Map Heatmap */}
+      {/* Google Charts GeoChart */}
       <div className="mb-6">
         <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
-          <HighchartsReact
-            highcharts={Highcharts}
-            constructorType={'mapChart'}
-            options={mapOptions}
-            ref={chartRef}
+          <Chart
+            chartEvents={[
+              {
+                eventName: "select",
+                callback: ({ chartWrapper }) => {
+                  const chart = chartWrapper.getChart();
+                  const selection = chart.getSelection();
+                  if (selection.length === 0) return;
+                  const region = data[selection[0].row + 1];
+                  console.log("Selected " + region);
+                },
+              },
+            ]}
+            chartType="GeoChart"
+            width="100%"
+            height="300px"
+            data={data}
+            options={options}
           />
           
           {/* Legend */}
