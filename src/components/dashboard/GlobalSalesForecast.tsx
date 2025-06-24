@@ -92,8 +92,8 @@ const GlobalSalesForecast = () => {
       try {
         // Import the map module dynamically
         const mapModule = await import('highcharts/modules/map');
-        // Initialize the map module - call the default export as a function
-        if (typeof mapModule.default === 'function') {
+        // Initialize the map module - the default export should be a function
+        if (mapModule.default && typeof mapModule.default === 'function') {
           mapModule.default(Highcharts);
         }
         
