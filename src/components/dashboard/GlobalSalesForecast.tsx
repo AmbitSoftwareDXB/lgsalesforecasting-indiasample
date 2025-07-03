@@ -1,24 +1,33 @@
 import React, { useState } from 'react';
 import { Chart } from "react-google-charts";
 import { useTheme } from '@/contexts/ThemeContext';
+import { useFeatureImportance } from '@/contexts/FeatureImportanceContext';
 
 const GlobalSalesForecast = () => {
   const { theme } = useTheme();
+  const { featureValues } = useFeatureImportance();
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   
   // Sample data for different countries - converted to Google Charts format
+  // Adjust accuracy based on feature importance values
+  const accuracyMultiplier = 1 + 
+    (featureValues.seasonalDemand - 85) * 0.001 + 
+    (featureValues.marketingSpend - 72) * 0.0015 + 
+    (featureValues.economicIndex - 54) * 0.002 - 
+    (featureValues.competitionPrice - 41) * 0.001;
+    
   const worldData = [
     ["Country", "Forecast Accuracy"],
-    ["United States", 95],
-    ["China", 87],
-    ["India", 92],
-    ["Germany", 78],
-    ["United Kingdom", 82],
-    ["Japan", 85],
-    ["Brazil", 73],
-    ["Australia", 76],
-    ["Canada", 88],
-    ["France", 80],
+    ["United States", Math.round(95 * accuracyMultiplier)],
+    ["China", Math.round(87 * accuracyMultiplier)],
+    ["India", Math.round(92 * accuracyMultiplier)],
+    ["Germany", Math.round(78 * accuracyMultiplier)],
+    ["United Kingdom", Math.round(82 * accuracyMultiplier)],
+    ["Japan", Math.round(85 * accuracyMultiplier)],
+    ["Brazil", Math.round(73 * accuracyMultiplier)],
+    ["Australia", Math.round(76 * accuracyMultiplier)],
+    ["Canada", Math.round(88 * accuracyMultiplier)],
+    ["France", Math.round(80 * accuracyMultiplier)],
   ];
 
   // Regional data for each country using proper region codes
@@ -271,13 +280,17 @@ const GlobalSalesForecast = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="text-left">
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">AI-based 8-Month Rolling Forecast</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">240K</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {Math.round(240 * (1 + (featureValues.seasonalDemand - 85) * 0.002 + (featureValues.marketingSpend - 72) * 0.0015))}K
+          </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">units</div>
         </div>
         
         <div className="text-left">
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Forecast Error</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">4.2%</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {(4.2 + (featureValues.inventoryLevels - 68) * 0.02).toFixed(1)}%
+          </div>
           <div className="text-xs text-green-600 dark:text-green-400">↓ 0.3% from last month</div>
         </div>
         

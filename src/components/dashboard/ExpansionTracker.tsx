@@ -1,36 +1,9 @@
 
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, LineChart, Line, ComposedChart } from 'recharts';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useFeatureImportance } from '@/contexts/FeatureImportanceContext';
 
-const capacityData = [
-  { 
-    quarter: 'Q1 2024', 
-    currentCapacity: 85000, 
-    plannedCapacity: 85000, 
-    forecastDemand: 82000,
-    utilizationRate: 96
-  },
-  { 
-    quarter: 'Q2 2024', 
-    currentCapacity: 85000, 
-    plannedCapacity: 95000, 
-    forecastDemand: 88000,
-    utilizationRate: 93
-  },
-  { 
-    quarter: 'Q3 2024', 
-    currentCapacity: 95000, 
-    plannedCapacity: 105000, 
-    forecastDemand: 98000,
-    utilizationRate: 93
-  },
-  { 
-    quarter: 'Q4 2024', 
-    currentCapacity: 105000, 
-    plannedCapacity: 115000, 
-    forecastDemand: 108000,
-    utilizationRate: 94
-  },
+const getBaseCapacityData = () => [
   { 
     quarter: 'Q1 2025', 
     currentCapacity: 115000, 
@@ -38,6 +11,62 @@ const capacityData = [
     forecastDemand: 118000,
     utilizationRate: 94
   },
+  { 
+    quarter: 'Q2 2025', 
+    currentCapacity: 125000, 
+    plannedCapacity: 135000, 
+    forecastDemand: 128000,
+    utilizationRate: 95
+  },
+  { 
+    quarter: 'Q3 2025', 
+    currentCapacity: 135000, 
+    plannedCapacity: 145000, 
+    forecastDemand: 138000,
+    utilizationRate: 95
+  },
+  { 
+    quarter: 'Q4 2025', 
+    currentCapacity: 145000, 
+    plannedCapacity: 155000, 
+    forecastDemand: 148000,
+    utilizationRate: 96
+  },
+  { 
+    quarter: 'Q1 2026', 
+    currentCapacity: 155000, 
+    plannedCapacity: 165000, 
+    forecastDemand: 158000,
+    utilizationRate: 96
+  },
+  { 
+    quarter: 'Q2 2026', 
+    currentCapacity: 165000, 
+    plannedCapacity: 175000, 
+    forecastDemand: 168000,
+    utilizationRate: 96
+  },
+  { 
+    quarter: 'Q3 2026', 
+    currentCapacity: 175000, 
+    plannedCapacity: 185000, 
+    forecastDemand: 178000,
+    utilizationRate: 97
+  },
+  { 
+    quarter: 'Q4 2026', 
+    currentCapacity: 185000, 
+    plannedCapacity: 195000, 
+    forecastDemand: 188000,
+    utilizationRate: 97
+  },
+  { 
+    quarter: 'Q1 2027', 
+    currentCapacity: 195000, 
+    plannedCapacity: 205000, 
+    forecastDemand: 198000,
+    utilizationRate: 97
+  }
 ];
 
 const expansionMilestones = [
@@ -49,6 +78,19 @@ const expansionMilestones = [
 
 const ExpansionTracker = () => {
   const { theme } = useTheme();
+  const { featureValues } = useFeatureImportance();
+  
+  // Adjust capacity data based on feature importance values
+  const capacityData = getBaseCapacityData().map(item => {
+    const demandMultiplier = 1 + (featureValues.seasonalDemand - 85) * 0.002 + 
+                           (featureValues.marketingSpend - 72) * 0.0015 + 
+                           (featureValues.economicIndex - 54) * 0.001;
+    
+    return {
+      ...item,
+      forecastDemand: Math.round(item.forecastDemand * demandMultiplier)
+    };
+  });
   
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">

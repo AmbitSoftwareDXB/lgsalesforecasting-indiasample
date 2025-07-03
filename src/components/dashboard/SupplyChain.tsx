@@ -1,5 +1,7 @@
 
-const supplyChainStages = [
+import { useFeatureImportance } from '@/contexts/FeatureImportanceContext';
+
+const getBaseSupplyChainStages = () => [
   { stage: 'Raw Materials', progress: 95, color: 'bg-green-500' },
   { stage: 'Manufacturing', progress: 78, color: 'bg-blue-500' },
   { stage: 'Quality Control', progress: 88, color: 'bg-yellow-500' },
@@ -8,6 +10,30 @@ const supplyChainStages = [
 ];
 
 const SupplyChain = () => {
+  const { featureValues } = useFeatureImportance();
+  
+  // Adjust supply chain stages based on feature importance values
+  const supplyChainStages = getBaseSupplyChainStages().map(stage => {
+    let adjustment = 0;
+    
+    // Inventory levels affect all stages
+    adjustment += (featureValues.inventoryLevels - 68) * 0.1;
+    
+    // Manufacturing affected by economic conditions
+    if (stage.stage === 'Manufacturing') {
+      adjustment += (featureValues.economicIndex - 54) * 0.15;
+    }
+    
+    // Distribution affected by competition
+    if (stage.stage === 'Distribution') {
+      adjustment -= (featureValues.competitionPrice - 41) * 0.1;
+    }
+    
+    return {
+      ...stage,
+      progress: Math.min(100, Math.max(0, stage.progress + adjustment))
+    };
+  });
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">

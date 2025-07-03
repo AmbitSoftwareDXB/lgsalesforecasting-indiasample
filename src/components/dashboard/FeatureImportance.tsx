@@ -4,19 +4,50 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Slider } from '@/components/ui/slider';
+import { useFeatureImportance } from '@/contexts/FeatureImportanceContext';
 
 const FeatureImportance = () => {
   const [timeRange, setTimeRange] = useState<'month' | 'quarter'>('month');
   const [forecastType, setForecastType] = useState<'sales' | 'supply' | 'risk'>('sales');
+  const { featureValues, updateFeatureValue } = useFeatureImportance();
+
+  const getFeatureValue = (featureName: string): number => {
+    const featureMap: { [key: string]: keyof typeof featureValues } = {
+      'Seasonal Demand': 'seasonalDemand',
+      'Marketing Spend': 'marketingSpend', 
+      'Inventory Levels': 'inventoryLevels',
+      'Economic Index': 'economicIndex',
+      'Competition Price': 'competitionPrice'
+    };
+    
+    const key = featureMap[featureName];
+    return key ? featureValues[key] : 0;
+  };
+
+  const handleFeatureChange = (featureName: string, value: number[]) => {
+    const featureMap: { [key: string]: keyof typeof featureValues } = {
+      'Seasonal Demand': 'seasonalDemand',
+      'Marketing Spend': 'marketingSpend',
+      'Inventory Levels': 'inventoryLevels', 
+      'Economic Index': 'economicIndex',
+      'Competition Price': 'competitionPrice'
+    };
+    
+    const key = featureMap[featureName];
+    if (key) {
+      updateFeatureValue(key, value[0]);
+    }
+  };
 
   const featuresData = {
     month: {
       sales: [
-        { name: 'Seasonal Demand', impact: 85, direction: 'positive', description: 'Peak season demand patterns' },
-        { name: 'Marketing Spend', impact: 72, direction: 'positive', description: 'Advertising and promotional investments' },
-        { name: 'Inventory Levels', impact: 68, direction: 'negative', description: 'Current stock availability' },
-        { name: 'Economic Index', impact: 54, direction: 'positive', description: 'Regional economic indicators' },
-        { name: 'Competition Price', impact: 41, direction: 'negative', description: 'Competitor pricing strategies' }
+        { name: 'Seasonal Demand', impact: getFeatureValue('Seasonal Demand'), direction: 'positive', description: 'Peak season demand patterns' },
+        { name: 'Marketing Spend', impact: getFeatureValue('Marketing Spend'), direction: 'positive', description: 'Advertising and promotional investments' },
+        { name: 'Inventory Levels', impact: getFeatureValue('Inventory Levels'), direction: 'negative', description: 'Current stock availability' },
+        { name: 'Economic Index', impact: getFeatureValue('Economic Index'), direction: 'positive', description: 'Regional economic indicators' },
+        { name: 'Competition Price', impact: getFeatureValue('Competition Price'), direction: 'negative', description: 'Competitor pricing strategies' }
       ],
       supply: [
         { name: 'Supplier Reliability', impact: 78, direction: 'positive', description: 'Vendor delivery consistency' },
@@ -136,7 +167,7 @@ const FeatureImportance = () => {
             <TooltipProvider key={feature.name}>
               <Tooltip>
                 <TooltipTrigger className="w-full">
-                  <div className="space-y-2 text-left">
+                  <div className="space-y-3 text-left">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
                         {feature.direction === 'positive' ? (
@@ -149,15 +180,36 @@ const FeatureImportance = () => {
                         </span>
                       </div>
                       <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                        {feature.impact}%
+                        {Math.round(feature.impact)}%
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 transition-all duration-300"
-                        style={{ width: `${feature.impact}%` }}
-                      />
-                    </div>
+                    
+                    {/* Interactive Slider for core sales features */}
+                    {forecastType === 'sales' && timeRange === 'month' && [
+                      'Seasonal Demand', 'Marketing Spend', 'Inventory Levels', 
+                      'Economic Index', 'Competition Price'
+                    ].includes(feature.name) ? (
+                      <div className="space-y-2">
+                        <Slider
+                          value={[feature.impact]}
+                          onValueChange={(value) => handleFeatureChange(feature.name, value)}
+                          max={100}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                          Drag to adjust impact
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 transition-all duration-300"
+                          style={{ width: `${feature.impact}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
