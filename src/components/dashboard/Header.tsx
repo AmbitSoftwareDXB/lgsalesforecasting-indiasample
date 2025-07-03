@@ -1,15 +1,17 @@
 
-
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Header = () => {
+  const { theme } = useTheme();
+  
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
-              src="/lovable-uploads/f4fab870-2c8c-49e0-ac5f-38b5dff0155f.png" 
+              src={theme === 'dark' ? "/lovable-uploads/0ca4dd4b-5f85-4eaf-9a0c-ed14963786ed.png" : "/lovable-uploads/f4fab870-2c8c-49e0-ac5f-38b5dff0155f.png"} 
               alt="LG Logo" 
               className="h-8"
             />
